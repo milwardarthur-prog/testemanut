@@ -193,6 +193,89 @@ h1 {
 
 .card-oculto { display: none; }
 
+.card { cursor: pointer; transition: box-shadow 0.15s, transform 0.15s; }
+.card:hover { box-shadow: 0 0 12px rgba(255,255,255,0.15); transform: translateY(-1px); }
+
+/* MODAL — TESTES DE CARGA */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-overlay.aberto { display: flex; }
+
+.modal-caixa {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 520px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 0 24px rgba(0,0,0,0.7);
+}
+
+.modal-cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #333;
+}
+
+.modal-cabecalho h2 { margin: 0; font-size: 1.15rem; }
+
+.modal-fechar {
+  background: none;
+  border: none;
+  color: #ccc;
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 4px;
+}
+.modal-fechar:hover { color: #fff; }
+
+.modal-conteudo {
+  padding: 16px 20px;
+  overflow-y: auto;
+}
+
+.teste-linha {
+  padding: 10px 0;
+  border-bottom: 1px solid #2a2a2a;
+  font-size: 0.9rem;
+}
+.teste-linha:last-child { border-bottom: none; }
+
+.teste-data {
+  font-weight: bold;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+.teste-valores {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 4px 16px;
+  color: #ccc;
+}
+
+.teste-valores span b { color: #eee; font-weight: normal; }
+
+.modal-vazio {
+  color: #888;
+  text-align: center;
+  padding: 20px 0;
+}
+
 @media (max-width: 850px) {
   .container-indicadores-topo {
     position: static;

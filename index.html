@@ -45,6 +45,16 @@
 
   <div id="painel" class="painel"></div>
 
+  <div id="modal-overlay" class="modal-overlay" onclick="fecharModalTestes()">
+    <div class="modal-caixa" onclick="event.stopPropagation()">
+      <div class="modal-cabecalho">
+        <h2 id="modal-titulo">Testes de Carga</h2>
+        <button class="modal-fechar" onclick="fecharModalTestes()">&times;</button>
+      </div>
+      <div id="modal-conteudo" class="modal-conteudo"></div>
+    </div>
+  </div>
+
   <script src="script.js"></script>
 </body>
 </html>

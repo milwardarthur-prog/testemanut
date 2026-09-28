@@ -21,6 +21,115 @@ const TODOS_EQUIPAMENTOS = [
 let filtroStatus = 'total';
 let filtroKva = 'todos';
 
+// Histórico de testes de carga por equipamento — vem do SiteManut (endpoint
+// público, sem login: só expõe dado técnico, sem cliente/custo/técnico).
+let testesCargaPorEquip = {};
+
+const TESTES_CARGA_URL = 'https://site-manut.vercel.app/api/public/testes-carga';
+
+// Split de uma linha CSV respeitando aspas — algumas linhas do CSV de testes
+// de carga têm campo entre aspas com vírgula dentro (ex: decimal "61,8Hz"),
+// e um split(',') simples quebra a coluna errado nesses casos.
+function parseCsvLine(linha) {
+  const campos = [];
+  let atual = '';
+  let dentroAspas = false;
+  for (let i = 0; i < linha.length; i++) {
+    const c = linha[i];
+    if (c === '"') {
+      if (dentroAspas && linha[i + 1] === '"') { atual += '"'; i++; }
+      else dentroAspas = !dentroAspas;
+    } else if (c === ',' && !dentroAspas) {
+      campos.push(atual.trim());
+      atual = '';
+    } else {
+      atual += c;
+    }
+  }
+  campos.push(atual.trim());
+  return campos;
+}
+
+// dd/mm/aaaa -> Date, pra ordenar do mais recente pro mais antigo.
+function parseDataBR(str) {
+  const partes = (str || '').trim().split('/');
+  if (partes.length < 3) return null;
+  const dia = parseInt(partes[0]);
+  const mes = parseInt(partes[1]) - 1;
+  const ano = parseInt(partes[2]);
+  const d = new Date(ano, mes, dia);
+  return isNaN(d.getTime()) ? null : d;
+}
+
+function carregarTestesCarga() {
+  fetch(TESTES_CARGA_URL, { cache: 'no-store' })
+    .then(res => res.json())
+    .then(data => {
+      const csv = data.csv || '';
+      const linhas = csv.trim().split('\n').filter(l => l.length > 0);
+      if (linhas.length < 2) return;
+      const cabecalho = parseCsvLine(linhas[0]);
+      const idx = {
+        eq: cabecalho.indexOf('Equipamento'),
+        data: cabecalho.indexOf('Data'),
+        tensaoVazio: cabecalho.indexOf('Tensao_Vazio'),
+        freqVazio: cabecalho.indexOf('Frequencia_Vazio'),
+        amperagem: cabecalho.indexOf('Amperagem'),
+        freqCarga: cabecalho.indexOf('Frequencia_Carga'),
+      };
+      const mapa = {};
+      for (let i = 1; i < linhas.length; i++) {
+        const cols = parseCsvLine(linhas[i]);
+        const eq = cols[idx.eq];
+        if (!eq) continue;
+        if (!mapa[eq]) mapa[eq] = [];
+        mapa[eq].push({
+          data: cols[idx.data] || '',
+          tensaoVazio: cols[idx.tensaoVazio] || '',
+          freqVazio: cols[idx.freqVazio] || '',
+          amperagem: cols[idx.amperagem] || '',
+          freqCarga: cols[idx.freqCarga] || '',
+        });
+      }
+      Object.keys(mapa).forEach(eq => {
+        mapa[eq].sort((a, b) => (parseDataBR(b.data) || 0) - (parseDataBR(a.data) || 0));
+      });
+      testesCargaPorEquip = mapa;
+    })
+    .catch(() => { /* painel de disponibilidade funciona normalmente sem isso */ });
+}
+
+function abrirModalTestes(eq) {
+  const registros = testesCargaPorEquip[eq] || [];
+  document.getElementById('modal-titulo').textContent = `Testes de Carga — ${eq}`;
+  const conteudo = document.getElementById('modal-conteudo');
+
+  if (registros.length === 0) {
+    conteudo.innerHTML = '<p class="modal-vazio">Nenhum teste de carga registrado para este equipamento.</p>';
+  } else {
+    conteudo.innerHTML = registros.map(r => `
+      <div class="teste-linha">
+        <div class="teste-data">${r.data}</div>
+        <div class="teste-valores">
+          <span>Tensão vazio: <b>${r.tensaoVazio || '-'}</b></span>
+          <span>Frequência vazio: <b>${r.freqVazio || '-'}</b></span>
+          <span>Amperagem: <b>${r.amperagem || '-'}</b></span>
+          <span>Frequência c/ carga: <b>${r.freqCarga || '-'}</b></span>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  document.getElementById('modal-overlay').classList.add('aberto');
+}
+
+function fecharModalTestes() {
+  document.getElementById('modal-overlay').classList.remove('aberto');
+}
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') document.getElementById('modal-overlay').classList.remove('aberto');
+});
+
 function extrairKva(nome) {
   const partes = nome.split('-');
   const kva = parseInt(partes[partes.length - 1]);
@@ -126,6 +235,8 @@ function aplicarFiltroKva(faixa, btn) {
   aplicarFiltros();
 }
 
+carregarTestesCarga();
+
 fetch('dados.csv?v=' + Date.now(), { cache: 'no-store' })
   .then(res => {
     const lastMod = res.headers.get('Last-Modified');
@@ -173,6 +284,7 @@ fetch('dados.csv?v=' + Date.now(), { cache: 'no-store' })
       card.setAttribute('data-status', info.status);
       card.setAttribute('data-kva', kva);
       card.setAttribute('data-eq', eq);
+      card.addEventListener('click', () => abrirModalTestes(eq));
 
       let topoHtml = '';
       if (info.prazo) {
