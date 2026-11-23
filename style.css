@@ -285,29 +285,31 @@ h1 {
   .atualizacao-topo { position: static; text-align: right; }
 }
 
-/* ABAS */
+/* ABAS — discretas: texto pequeno, sem caixa, só um traço embaixo da aba ativa */
 .abas {
   display: flex;
   justify-content: center;
-  gap: 8px;
-  margin: 0 0 14px;
+  gap: 14px;
+  margin: -12px 0 4px;
   position: relative;
   z-index: 20;
 }
 
 .aba {
-  background: #222;
-  color: #bbb;
-  border: 1px solid #333;
-  border-radius: 8px;
-  padding: 8px 18px;
-  font-size: 0.95rem;
-  font-weight: bold;
+  background: none;
+  color: #666;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  padding: 2px 4px;
+  font-size: 0.72rem;
+  font-weight: normal;
+  letter-spacing: 0.03em;
   cursor: pointer;
 }
 
-.aba:hover { background: #2c2c2c; color: #fff; }
-.aba.ativa { background: #1e6b3a; border-color: #2a9d55; color: #fff; }
+.aba:hover { color: #bbb; }
+.aba.ativa { color: #ddd; border-bottom-color: #2a9d55; }
 
 /* O conteúdo da aba Disponibilidade passa a ser o referencial dos itens do topo
    (indicadores à esquerda, "atualizado em" à direita), que antes eram
@@ -320,7 +322,7 @@ h1 {
 .aba-carga iframe {
   display: block;
   width: 100%;
-  height: calc(100vh - 100px);
+  height: calc(100vh - 56px);
   min-height: 560px;
   border: 0;
   border-radius: 10px;
