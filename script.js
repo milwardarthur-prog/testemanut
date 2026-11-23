@@ -331,3 +331,21 @@ fetch('dados.csv?v=' + Date.now(), { cache: 'no-store' })
     taxaDispEl.textContent = taxaDisp.toFixed(1) + '%';
     taxaDispEl.className = 'indicador-valor';
   });
+
+// ── Abas: Disponibilidade | Montar carga ────────────────────────────────────
+// "Montar carga" é a mesma tela do SiteManut, em modo só de leitura (medidas,
+// pesos e veículos vêm de lá e se editam lá), mostrada num iframe que só é
+// carregado na primeira vez que a aba é aberta.
+const CARGA_URL = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+  ? 'http://localhost:3000/carga-publica'
+  : 'https://site-manut.vercel.app/carga-publica';
+
+function mostrarAba(aba) {
+  const carga = aba === 'carga';
+  document.getElementById('aba-disponibilidade').hidden = carga;
+  document.getElementById('aba-carga').hidden = !carga;
+  document.getElementById('aba-btn-disp').classList.toggle('ativa', !carga);
+  document.getElementById('aba-btn-carga').classList.toggle('ativa', carga);
+  const frame = document.getElementById('frame-carga');
+  if (carga && !frame.getAttribute('src')) frame.src = CARGA_URL;
+}

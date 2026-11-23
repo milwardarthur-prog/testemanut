@@ -8,6 +8,13 @@
 </head>
 <body>
 
+  <nav class="abas">
+    <button class="aba ativa" id="aba-btn-disp" onclick="mostrarAba('disponibilidade')">Disponibilidade</button>
+    <button class="aba" id="aba-btn-carga" onclick="mostrarAba('carga')">Montar carga</button>
+  </nav>
+
+  <div id="aba-disponibilidade">
+
   <div class="container-indicadores-topo">
     <div class="card-indicador" id="card-ocupacao">
       <div class="indicador-titulo">Taxa de Ocupação</div>
@@ -44,6 +51,13 @@
   </div>
 
   <div id="painel" class="painel"></div>
+
+  </div><!-- /aba-disponibilidade -->
+
+  <!-- Montar carga: mesma tela do SiteManut, só leitura, carregada na 1ª vez que a aba abre -->
+  <div id="aba-carga" class="aba-carga" hidden>
+    <iframe id="frame-carga" title="Montar carga" allow="clipboard-write"></iframe>
+  </div>
 
   <div id="modal-overlay" class="modal-overlay" onclick="fecharModalTestes()">
     <div class="modal-caixa" onclick="event.stopPropagation()">

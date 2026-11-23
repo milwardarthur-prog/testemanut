@@ -284,3 +284,45 @@ h1 {
   }
   .atualizacao-topo { position: static; text-align: right; }
 }
+
+/* ABAS */
+.abas {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin: 0 0 14px;
+  position: relative;
+  z-index: 20;
+}
+
+.aba {
+  background: #222;
+  color: #bbb;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 8px 18px;
+  font-size: 0.95rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.aba:hover { background: #2c2c2c; color: #fff; }
+.aba.ativa { background: #1e6b3a; border-color: #2a9d55; color: #fff; }
+
+/* O conteúdo da aba Disponibilidade passa a ser o referencial dos itens do topo
+   (indicadores à esquerda, "atualizado em" à direita), que antes eram
+   posicionados em relação à página inteira. */
+#aba-disponibilidade { position: relative; }
+#aba-disponibilidade .container-indicadores-topo { top: -14px; left: 0; }
+#aba-disponibilidade .atualizacao-topo { top: -20px; right: 0; }
+[hidden] { display: none !important; }
+
+.aba-carga iframe {
+  display: block;
+  width: 100%;
+  height: calc(100vh - 100px);
+  min-height: 560px;
+  border: 0;
+  border-radius: 10px;
+  background: #f9fafb;
+}
